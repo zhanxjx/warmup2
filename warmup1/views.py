@@ -89,7 +89,7 @@ def unitTests():
 		nrFailed   = 0
 		while True:
 			thisDir = os.path.dirname(os.path.abspath(__file__))
-			cmd = "make -C "+thisDir+" unit_tests >"+ofileName+" 2>&1"
+			cmd = "make -C "+thisDir+"/.. unit_tests >"+ofileName+" 2>&1"
 			print "Executing "+cmd
 			code = os.system(cmd)
 			if code != 0:
