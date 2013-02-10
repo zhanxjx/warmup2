@@ -31,7 +31,7 @@ def userLogin(request):
 		resp = {"errCode": rtn}
 	else:
 		resp = {"errCode": SUCCESS, "count": rtn}
-	return HttpResponse(json.dumps(resp))
+	return HttpResponse(content=json.dumps(resp), content_type='application/json')
 	
 @csrf_exempt
 def testAPI(request):
@@ -40,7 +40,7 @@ def testAPI(request):
 		resp = {"errCode": rtn}
 	if request.path == "/TESTAPI/unitTests":
 		resp = TESTAPI_unitTests()
-	return HttpResponse(json.dumps(resp))
+	return HttpResponse(content=json.dumps(resp), content_type='application/json')
 
 def login(u, p):
 	if len(u) > 128 or not u:
