@@ -22,9 +22,9 @@ class TestUnit(RestTestCase):
 
 class TestBackend(RestTestCase):
 	def assertResponse(self, respData, count = None, errCode = SUCCESS):
-		expected = {'errCode' : errCode}
+		expected = {'errCode': errCode}
 		if count is not None:
-			expected['count']  = count
+			expected['count'] = count
 		self.assertDictEqual(expected, respData)
 	
 	def testAddSingleUser(self):
