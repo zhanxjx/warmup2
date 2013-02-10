@@ -12,6 +12,18 @@ ERR_USER_EXISTS = -2
 ERR_BAD_USERNAME = -3
 ERR_BAD_PASSWORD = -4
 
+class TestUnit(testLib.RestTestCase):
+
+	def testUnit(self):
+		respData = self.makeRequest("/TESTAPI/unitTests", method="POST")
+		self.assertTrue('output' in respData)
+		print ("Unit tests output:\n" + "\n***** ".join(respData['output'].split("\n")))
+		self.assertTrue('totalTests' in respData)
+		print "***** Reported " + str(respData['totalTests']) + " unit tests"
+		minimumTests = 10
+		self.assertTrue(respData['totalTests'] >= minimumTests, "at least "+str(minimumTests)+" unit tests. Found only " + str(respData['totalTests']) + ".")
+		self.assertEquals(0, respData['nrFailed'])
+
 class TestBackend(RestTestCase):
 	def assertResponse(self, respData, count = None, errCode = SUCCESS):
 		expected = {'errCode' : errCode}
@@ -22,6 +34,14 @@ class TestBackend(RestTestCase):
 	def testAddSingleUser(self):
 		respData = self.makeRequest("/users/add", method="POST", data = {'user': 'user1', 'password': 'password'})
 		self.assertResponse(respData, count=1)
+	
+	def testAddSameUser(self):
+		respData = self.makeRequest("/users/add", method="POST", data = {'user': 'user1', 'password': 'password'})
+		self.assertResponse(respData, count=1)
+		respData = self.makeRequest("/users/add", method="POST", data = {'user': 'user1', 'password': 'password'})
+		self.assertResponse(respData, errCode=ERR_USER_EXISTS)
+		respData = self.makeRequest("/users/add", method="POST", data = {'user': 'user1', 'password': 'password'})
+		self.assertResponse(respData, errCode=ERR_USER_EXISTS)
 
 	def testAddMultipleUser(self):
 		respData = self.makeRequest("/users/add", method="POST", data = {'user': 'user1', 'password': 'password'})
@@ -33,7 +53,7 @@ class TestBackend(RestTestCase):
 	
 	def testAddUserWithEmptyUsername(self):
 		respData = self.makeRequest("/users/add", method="POST", data = {'user': '', 'password': 'password'})
-		self.assertResponse(respData, errCode=-3)
+		self.assertResponse(respData, errCode=ERR_BAD_USERNAME)
 
 	def testAddUserWithEmptyPassword(self):
 		respData = self.makeRequest("/users/add", method="POST", data = {'user': 'user1', 'password': ''})
@@ -41,11 +61,11 @@ class TestBackend(RestTestCase):
 	
 	def testAddUserWithLongUsername(self):
 		respData = self.makeRequest("/users/add", method="POST", data = {'user': 'user1'*128, 'password': 'password'})
-		self.assertResponse(respData, errCode=-3)
+		self.assertResponse(respData, errCode=ERR_BAD_USERNAME)
 	
 	def testAddUserWithLongPassword(self):
 		respData = self.makeRequest("/users/add", method="POST", data = {'user': 'user1', 'password': 'password'*128})
-		self.assertResponse(respData, errCode=-4)
+		self.assertResponse(respData, errCode=ERR_BAD_PASSWORD)
 	
 	def testLoginSingleUserOneTime(self):
 		respData = self.makeRequest("/users/add", method="POST", data = {'user': 'user1', 'password': 'password'})
@@ -96,7 +116,7 @@ class TestBackend(RestTestCase):
 		
 	def testLoginWithEmptyUsername(self):
 		respData = self.makeRequest("/users/login", method="POST", data = {'user': '', 'password': 'password'})
-		self.assertResponse(respData, errCode=-3)
+		self.assertResponse(respData, errCode=ERR_BAD_USERNAME)
 
 	def testLoginWithEmptyPassword(self):
 		respData = self.makeRequest("/users/add", method="POST", data = {'user': 'user1', 'password': ''})
@@ -105,13 +125,13 @@ class TestBackend(RestTestCase):
 	
 	def testLoginWithLongUsername(self):
 		respData = self.makeRequest("/users/login", method="POST", data = {'user': 'user1'*128, 'password': 'password'})
-		self.assertResponse(respData, errCode=-3)
+		self.assertResponse(respData, errCode=ERR_BAD_USERNAME)
 	
 	def testLoginWithLongPassword(self):
 		respData = self.makeRequest("/users/login", method="POST", data = {'user': 'user1', 'password': 'password'*128})
-		self.assertResponse(respData, errCode=-4)
+		self.assertResponse(respData, errCode=ERR_BAD_PASSWORD)
 		
 	def testLoginWithWrongPassword(self):
 		respData = self.makeRequest("/users/add", method="POST", data = {'user': 'user1', 'password': ''})
 		respData = self.makeRequest("/users/login", method="POST", data = {'user': 'user1', 'password': 'password1'})
-		self.assertResponse(respData, errCode=-1)
+		self.assertResponse(respData, errCode=ERR_BAD_CREDENTIALS)

@@ -36,10 +36,10 @@ def userLogin(request):
 @csrf_exempt
 def testAPI(request):
 	if request.path == '/TESTAPI/resetFixture':
-		rtn = TESTAPI_resetFixture()
+		rtn = reset()
 		resp = {"errCode": rtn}
 	if request.path == "/TESTAPI/unitTests":
-		resp = TESTAPI_unitTests()
+		resp = unitTests()
 	return HttpResponse(content=json.dumps(resp), content_type='application/json')
 
 def login(u, p):
@@ -76,11 +76,11 @@ def add(u, p):
 	else:
 		return ERR_USER_EXISTS
 
-def TESTAPI_resetFixture():
+def reset():
 	User.objects.all().delete()
 	return 1
 
-def TESTAPI_unitTests():
+def unitTests():
 	(ofile, ofileName) = tempfile.mkstemp(prefix="userCounter")
 	try:
 		errMsg = ""
