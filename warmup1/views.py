@@ -3,12 +3,17 @@ from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
 from models import User
 import json
+import os
+import cgi
+import tempfile
+import traceback
+import re
 
-SUCCESS               =   1  # : a success
-ERR_BAD_CREDENTIALS   =  -1  # : (for login only) cannot find the user/password pair in the database
-ERR_USER_EXISTS       =  -2  # : (for add only) trying to add a user that already exists
-ERR_BAD_USERNAME      =  -3  # : (for add, or login) invalid user name (only empty string is invalid for now)
-ERR_BAD_PASSWORD      =  -4
+SUCCESS  = 1
+ERR_BAD_CREDENTIALS = -1
+ERR_USER_EXISTS = -2
+ERR_BAD_USERNAME = -3
+ERR_BAD_PASSWORD = -4
 
 def client(request):
 	return render_to_response('client.html')
@@ -32,7 +37,9 @@ def userLogin(request):
 def testAPI(request):
 	if request.path == '/TESTAPI/resetFixture':
 		rtn = TESTAPI_resetFixture()
-	resp = {"errCode": rtn}
+		resp = {"errCode": rtn}
+	if request.path == "/TESTAPI/unitTests":
+		resp = TESTAPI_unitTests()
 	return HttpResponse(json.dumps(resp))
 
 def login(u, p):
@@ -69,3 +76,38 @@ def add(u, p):
 def TESTAPI_resetFixture():
 	User.objects.all().delete()
 	return 1
+
+def TESTAPI_unitTests():
+	(ofile, ofileName) = tempfile.mkstemp(prefix="userCounter")
+	try:
+		errMsg = ""
+		output = ""
+		totalTests = 0
+		nrFailed   = 0
+		while True:
+			thisDir = os.path.dirname(os.path.abspath(__file__))
+			cmd = "make -C "+thisDir+" unit_tests >"+ofileName+" 2>&1"
+			print "Executing "+cmd
+			code = os.system(cmd)
+			if code != 0:
+				errMsg = "Error running command (code="+str(code)+"): "+cmd+"\n"
+			try:
+				ofileFile = open(ofileName, "r")
+				output = ofileFile.read()
+				ofileFile.close ()
+			except:
+				errMsg += "Error reading the output "+traceback.format_exc()
+				break
+			print "Got "+output
+			m = re.search(r'Ran (\d+) tests', output)
+			if not m:
+				errMsg += "Cannot extract the number of tests\n"
+				break
+			totalTests = int(m.group(1))
+			m = re.search('rFAILED.*\(failures=(\d+)\)', output)
+			if m:
+				nrFailures = int(m.group(1))
+			break
+		return {'output': errMsg + output, 'totalTests': totalTests, 'nrFailed': nrFailed}
+	finally:
+		os.unlink(ofileName)
