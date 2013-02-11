@@ -80,17 +80,17 @@ class UnitTests(unittest.TestCase):
 		self.assertEquals(9, login("user3", "password"))
 		
 	def testLoginWithEmptyUsername(self):
-		self.assertEquals(ERR_BAD_USERNAME, login("", "password"))
+		self.assertEquals(ERR_BAD_CREDENTIALS, login("", "password"))
 
 	def testLoginWithEmptyPassword(self):
 		add("user1", "")
 		self.assertEquals(2, login("user1", ""))
 	
 	def testLoginWithLongUsername(self):
-		self.assertEquals(ERR_BAD_USERNAME, login("user1"*128, "password"))
+		self.assertEquals(ERR_BAD_CREDENTIALS, login("user1"*128, "password"))
 	
 	def testLoginWithLongPassword(self):
-		self.assertEquals(ERR_BAD_PASSWORD, login("user1", "password"*128))
+		self.assertEquals(ERR_BAD_CREDENTIALS, login("user1", "password"*128))
 		
 	def testLoginWithWrongPassword(self):
 		add("user1", "password")

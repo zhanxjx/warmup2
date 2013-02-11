@@ -112,7 +112,7 @@ class TestBackend(RestTestCase):
 		
 	def testLoginWithEmptyUsername(self):
 		respData = self.makeRequest("/users/login", method="POST", data = {'user': '', 'password': 'password'})
-		self.assertResponse(respData, errCode=ERR_BAD_USERNAME)
+		self.assertResponse(respData, errCode=ERR_BAD_CREDENTIALS)
 
 	def testLoginWithEmptyPassword(self):
 		respData = self.makeRequest("/users/add", method="POST", data = {'user': 'user1', 'password': ''})
@@ -121,11 +121,11 @@ class TestBackend(RestTestCase):
 	
 	def testLoginWithLongUsername(self):
 		respData = self.makeRequest("/users/login", method="POST", data = {'user': 'user1'*128, 'password': 'password'})
-		self.assertResponse(respData, errCode=ERR_BAD_USERNAME)
+		self.assertResponse(respData, errCode=ERR_BAD_CREDENTIALS)
 	
 	def testLoginWithLongPassword(self):
 		respData = self.makeRequest("/users/login", method="POST", data = {'user': 'user1', 'password': 'password'*128})
-		self.assertResponse(respData, errCode=ERR_BAD_PASSWORD)
+		self.assertResponse(respData, errCode=ERR_BAD_CREDENTIALS)
 		
 	def testLoginWithWrongPassword(self):
 		respData = self.makeRequest("/users/add", method="POST", data = {'user': 'user1', 'password': ''})

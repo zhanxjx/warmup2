@@ -43,11 +43,8 @@ def testAPI(request):
 	return HttpResponse(content=json.dumps(resp), content_type='application/json')
 
 def login(u, p):
-	if len(u) > 128 or not u:
-		return ERR_BAD_USERNAME
-		
-	if len(p) > 128:
-		return ERR_BAD_PASSWORD
+	if len(u) > 128 or not u or len(p) > 128:
+		return ERR_BAD_CREDENTIALS
 	
 	try:
 		result = User.objects.get(name=u)
