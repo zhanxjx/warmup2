@@ -21,11 +21,11 @@ class RestTestCase(unittest.TestCase):
     ERR_BAD_PASSWORD    = -4
     
     # Lookup the name of the server to test
-    serverToTest = "localhost:8080"
+    serverToTest = "localhost:5000"
     if "TEST_SERVER" in os.environ:
         serverToTest = os.environ["TEST_SERVER"]
 
-    def makeRequest(self, url, method="GET", data={}):
+    def makeRequest(self, url, method="GET", data=None):
         """
         Make a request to the server.
         @param url is the relative url (no hostname)
@@ -35,8 +35,8 @@ class RestTestCase(unittest.TestCase):
         """
         
         headers = { }
-        body = ""
-        if data:
+        body = ""  
+        if data is not None:
             headers = { "content-type": "application/json" }
             body = json.dumps(data)
 
@@ -48,8 +48,7 @@ class RestTestCase(unittest.TestCase):
                 sys.exit(1)
             raise
 
-        self.conn.sock.settimeout(100.0)
-
+        self.conn.sock.settimeout(100.0) # Give time to the remote server to start and respond
         resp = self.conn.getresponse()
         data_string = "<unknown"
         try:
