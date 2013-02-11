@@ -48,6 +48,8 @@ class RestTestCase(unittest.TestCase):
                 sys.exit(1)
             raise
 
+        self.conn.sock.settimeout(100.0)
+
         resp = self.conn.getresponse()
         data_string = "<unknown"
         try:

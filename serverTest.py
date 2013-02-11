@@ -97,4 +97,5 @@ class UnitTests(unittest.TestCase):
 		self.assertEquals(ERR_BAD_CREDENTIALS, login("user1", "password1"))
 
 if __name__ == "__main__":
+	sys.argv = [sys.argv[0]] + ["-v"] + sys.argv[1:]
 	unittest.main()
