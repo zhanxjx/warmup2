@@ -9,7 +9,7 @@ function json_request(page, dict, success, failure) {
         contentType: "application/json",
         dataType: "json",
         success: success,
-        failure: failure
+        error: failure
     });
 }
 
