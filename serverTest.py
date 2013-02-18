@@ -1,8 +1,8 @@
 import unittest
 import sys
 import os
-os.environ['DJANGO_SETTINGS_MODULE'] = "warmup1.settings"
-from warmup1.views import *
+os.environ['DJANGO_SETTINGS_MODULE'] = "warmup2.settings"
+from warmup2.views import *
 
 SUCCESS  = 1
 ERR_BAD_CREDENTIALS = -1
