@@ -16,8 +16,8 @@
 	<div id="login-page" class="login">
 		<div id="login-message" class="message"></div>
 		<form>
-			<input id="login-username" type="text" class="login-input" placeholder="Username" autofocus>
-			<input id="login-password" type="password" class="login-input" placeholder="Password">
+			<input id="username" type="text" class="login-input" placeholder="Username" autofocus>
+			<input id="password" type="password" class="login-input" placeholder="Password">
 			<button id="login-button" class="submit button" type="button">Login</button>
 			<button id="add-user-button" class="submit button" type="button">Sign Up</button>
 		</form>
@@ -49,44 +49,41 @@
 	<script>
 		$(document).ready(function() {
 			$('#login-message').html("Please enter your credentials below");
-			popup_welcome();
 		});
 
 		function handle_login_response(data, user) {
-		  if( data.errCode > 0 ) {
-		     c = data.count;
-		     popup_welcome(user, c);
+		  if(data.errCode > 0) {
+		     popup_welcome(user, data.count, 'login');
 		  } else {
 		     $('#login-message').html(get_message_for_errcode(data.errCode));  
 		  }
 		}
 
 		function handle_add_user_response(data, user) {
-		  if( data.errCode > 0 ) {
-		     c = data.count;
-		     popup_welcome(user, c);
+		  if(data.errCode > 0) {
+		     popup_welcome(user, data.count, 'add');
 		  } else {
 		     $('#login-message').html(get_message_for_errcode(data.errCode)); 
 		  }
 		}
 
 		$('#login-button').click(function() {
-		   username = $('#login-username').val()
-		   password = $('#login-password').val()
+		   username = $('#username').val()
+		   password = $('#password').val()
 		   json_request("/users/login", { user: username, password: password }, function(data) { return handle_login_response(data, username); }, function(err) { alert('error occurred on request'); });
 
 		   return false;
 		});
 
 		$('#add-user-button').click(function() {
-		   username = $('#login-username').val()
-		   password = $('#login-password').val()
+		   username = $('#username').val()
+		   password = $('#password').val()
 		   json_request("/users/add", { user: username, password: password }, function(data) { return handle_add_user_response(data, username); }, function(err) {alert('error occurred on request'); });
 
 		   return false;
 		});
 		
-		function popup_welcome(user, count) {
+		function popup_welcome(user, count, msg) {
 			//Getting the variable's value from a link 
 			var loginBox = '#welcome-popup'
 
@@ -106,12 +103,18 @@
 			$('body').append('<div id="mask"></div>');
 			$('#mask').fadeIn(300);
 			
-			$('#welcome-message').html("<p>Welcome "+user+"</p><p>You have logged in "+count+" times.</p>");
+			if (msg === 'login') {
+				$('#welcome-message').html("<p>Welcome back "+user+"!</p><p>You have logged in "+count+" times.</p>");
+			} else {
+				$('#welcome-message').html("<p>Welcome "+user+"!</p><p>We hope you enjoyed the login experience.</p>");
+			}
 		
 			return false;
 		}
 		
 		$('#logout-button').click(function() {
+		  $('#username').val("")
+		  $('#password').val("")
 			$('#mask , #welcome-popup').fadeOut(300 , function() {
 				$('#mask').remove();  
 			}); 
