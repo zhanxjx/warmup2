@@ -47,7 +47,7 @@
 	
 	<script>
 		$(document).ready(function() {
-			$('#login-message').html("Please enter your credentials below");
+			$('#login-message').html("Please enter your credentials below.");
 		});
 
 		$('#login-button').click(function() {
@@ -96,6 +96,8 @@
 		}
 		
 		function popup_welcome(user, count, msg) {
+			$('#login-message').html("Please logout to use the login counter again.");
+			
 			//Getting the variable's value from a link 
 			var welcomeBox = '#welcome-popup'
 
@@ -125,6 +127,7 @@
 		}
 		
 		function disable_fields() {
+			$('#login-message').html("Please wait while your login is being processed...");
 			document.getElementById('username').disabled=true;
 			document.getElementById('password').disabled=true;
 			document.getElementById('login-button').disabled=true;
@@ -145,6 +148,7 @@
 		}
 		
 		$('#logout-button').click(function() {
+			$('#login-message').html("Please enter your credentials below.");
 			enable_fields();
 			$('#mask , #welcome-popup').fadeOut(300 , function() {
 				$('#mask').remove();  
