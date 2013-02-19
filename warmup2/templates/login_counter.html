@@ -2,12 +2,163 @@
 <head>
 	<meta charset="utf-8">
 	<title>CS 169 Login Counter</title>
+	<link rel="stylesheet" href="css/login_counter.css">
 	<link rel="shortcut icon" href="images/favicon.ico">
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="login_counter.js"></script>
 	<!--[if lt IE 9]>
 		<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
 </head>
 <body>
-	<strong>Site maintenance, please come back later.</strong>
+	<div id="login-page" class="login">
+		<div id="login-message" class="message"></div>
+		<form id="login-form">
+			<input id="username" type="text" class="login-input" placeholder="Username" autofocus>
+			<input id="password" type="password" class="login-input" placeholder="Password">
+			<button id="login-button" class="submit button" type="button">Login</button>
+			<button id="sign-up-button" class="submit button" type="button">Sign Up</button>
+		</form>
+	</div>
+	
+	<div id="welcome-popup" class="welcome-popup">
+	  <div id="welcome-message" class="message"></div>
+	  <center>
+	    <form method="post" action="#">
+				<button id="logout-button" class="submit button" type="button">Logout</button>
+	    </form>
+	  </center>
+	</div>
+	
+	<footer>
+		Copyright &copy; 1991-2013 Xingjian Zhan, University of California Berkeley
+		<table class="center">
+			<tr>
+				<td><a href="http://www.facebook.com/zhanxj" target="_blank"><img src="images/Facebook.png" height="50" width="50"></a></td>
+				<td><a href="http://www.linkedin.com/in/zhanxj" target="_blank"><img src="images/LinkedIn.png" height="50" width="50"></a></td>
+				<td><a href="http://www.twitter.com/zhanxj" target="_blank"><img src="images/Twitter.png" height="50" width="50"></a></td>
+				<td><a href="http://www.Gplus.to/zhanxj" target="_blank"><img src="images/G+.png" height="50" width="50"></a></td>
+				<td><a href="http://www.renren.com/zhanxj" target="_blank"><img src="images/Renren.png" height="50" width="50" /></a></td>
+				<td><a href="http://sighttp.qq.com/authd?IDKEY=7a7d38e87212065200b66f97c509436d7c3f0303c2b990cd" target="_blank"><img border="0"  src="images/QQ.png"  height="50" width="50"></a></td>
+			</tr>
+		</table>
+	</footer>
+	
+	<script>
+		$(document).ready(function() {
+			$('#login-message').html("Please enter your credentials below");
+		});
+
+		function handle_login_response(data, user) {
+			if(data.errCode > 0) {
+				popup_welcome(user, data.count, 'login');
+			} else {
+				$('#login-message').html(get_message_for_errcode(data.errCode));  
+			}
+		}
+
+		function handle_add_user_response(data, user) {
+			if(data.errCode > 0) {
+				popup_welcome(user, data.count, 'add');
+			} else {
+				$('#login-message').html(get_message_for_errcode(data.errCode)); 
+			}
+		}
+
+		$('#login-button').click(function() {
+			username = $('#username').val()
+			password = $('#password').val()
+			disable_fields();
+			clear_fields();
+	    $.ajax({
+	        type: 'POST',
+	        url: '/users/login',
+	        data: JSON.stringify({user: username, password: password}),
+	        contentType: "application/json",
+	        dataType: "json",
+	        success: function(data) {return handle_login_response(data, username);},
+	        error: function(err) {alert('The database has not been set up yet.');}
+	    });
+
+			return false;
+		});
+
+		$('#sign-up-button').click(function() {
+			username = $('#username').val()
+			password = $('#password').val()
+			disable_fields();
+			clear_fields();
+	    $.ajax({
+	        type: 'POST',
+	        url: '/users/add',
+	        data: JSON.stringify({user: username, password: password}),
+	        contentType: "application/json",
+	        dataType: "json",
+	        success: function(data) {return handle_login_response(data, username);},
+	        error: function(err) {alert('The database has not been set up yet.');}
+	    });
+
+			return false;
+		});
+		
+		function popup_welcome(user, count, msg) {
+			//Getting the variable's value from a link 
+			var welcomeBox = '#welcome-popup'
+
+			//Fade in the Popup
+			$(welcomeBox).fadeIn(300);
+		
+			//Set the center alignment padding + border see css style
+			var popMargTop = ($(welcomeBox).height() + 44) / 2; 
+			var popMargLeft = ($(welcomeBox).width() + 44) / 2; 
+		
+			$(welcomeBox).css({ 
+				'margin-top' : -popMargTop,
+				'margin-left' : -popMargLeft
+			});
+		
+			// Add the mask to body
+			$('body').append('<div id="mask"></div>');
+			$('#mask').fadeIn(300);
+			
+			if (msg == 'login') {
+				$('#welcome-message').html("<p>Welcome back "+user+"!</p><p>You have logged in "+count+" times.</p>");
+			} else {
+				$('#welcome-message').html("<p>Welcome "+user+"!</p><p>We hope you enjoyed the login experience.</p>");
+			}
+		
+			return false;
+		}
+		
+		function disable_fields() {
+			document.getElementById('username').disabled=true;
+			document.getElementById('password').disabled=true;
+			document.getElementById('login-button').disabled=true;
+			document.getElementById('sign-up-button').disabled=true;
+		}
+		
+		function enable_fields() {
+			document.getElementById('username').disabled=false;
+			document.getElementById('username').focus();
+			document.getElementById('password').disabled=false;
+			document.getElementById('login-button').disabled=false;
+			document.getElementById('sign-up-button').disabled=false;
+		}
+		
+		function clear_fields() {
+			$('#username').val("");
+			$('#password').val("");
+		}
+		
+		$('#logout-button').click(function() {
+			enable_fields();
+			$('#mask , #welcome-popup').fadeOut(300 , function() {
+				$('#mask').remove();  
+			}); 
+			
+			return false;
+		});
+	</script>
 </body>
 </html>
