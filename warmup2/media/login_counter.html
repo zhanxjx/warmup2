@@ -15,11 +15,11 @@
 <body>
 	<div id="login-page" class="login">
 		<div id="login-message" class="message"></div>
-		<form>
+		<form id="login-form">
 			<input id="username" type="text" class="login-input" placeholder="Username" autofocus>
 			<input id="password" type="password" class="login-input" placeholder="Password">
 			<button id="login-button" class="submit button" type="button">Login</button>
-			<button id="add-user-button" class="submit button" type="button">Sign Up</button>
+			<button id="sign-up-button" class="submit button" type="button">Sign Up</button>
 		</form>
 	</div>
 	
@@ -70,18 +70,18 @@
 		$('#login-button').click(function() {
 			username = $('#username').val()
 			password = $('#password').val()
-			$('#username').val("")
-			$('#password').val("")
+			disable_fields();
+			clear_fields();
 			json_request("/users/login", { user: username, password: password }, function(data) { return handle_login_response(data, username); }, function(err) { alert('error occurred on request'); });
 
 			return false;
 		});
 
-		$('#add-user-button').click(function() {
+		$('#sign-up-button').click(function() {
 			username = $('#username').val()
 			password = $('#password').val()
-			$('#username').val("")
-			$('#password').val("")
+			disable_fields();
+			clear_fields();
 			json_request("/users/add", { user: username, password: password }, function(data) { return handle_add_user_response(data, username); }, function(err) {alert('error occurred on request'); });
 
 			return false;
@@ -116,10 +116,32 @@
 			return false;
 		}
 		
+		function disable_fields() {
+			document.getElementById('username').disabled=true;
+			document.getElementById('password').disabled=true;
+			document.getElementById('login-button').disabled=true;
+			document.getElementById('sign-up-button').disabled=true;
+		}
+		
+		function enable_fields() {
+			document.getElementById('username').disabled=false;
+			document.getElementById('username').focus();
+			document.getElementById('password').disabled=false;
+			document.getElementById('login-button').disabled=false;
+			document.getElementById('sign-up-button').disabled=false;
+		}
+		
+		function clear_fields() {
+			$('#username').val("");
+			$('#password').val("");
+		}
+		
 		$('#logout-button').click(function() {
+			enable_fields();
 			$('#mask , #welcome-popup').fadeOut(300 , function() {
 				$('#mask').remove();  
 			}); 
+			
 			return false;
 		});
 	</script>
