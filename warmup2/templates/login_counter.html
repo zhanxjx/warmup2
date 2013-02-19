@@ -54,7 +54,8 @@
 			if(data.errCode > 0) {
 				popup_welcome(user, data.count, 'login');
 			} else {
-				$('#login-message').html(get_message_for_errcode(data.errCode));  
+				$('#login-message').html(get_message_for_errcode(data.errCode));
+				enable_fields(); 
 			}
 		}
 
@@ -62,7 +63,8 @@
 			if(data.errCode > 0) {
 				popup_welcome(user, data.count, 'add');
 			} else {
-				$('#login-message').html(get_message_for_errcode(data.errCode)); 
+				$('#login-message').html(get_message_for_errcode(data.errCode));
+				enable_fields();
 			}
 		}
 
