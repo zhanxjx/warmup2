@@ -52,49 +52,53 @@
 		});
 
 		function handle_login_response(data, user) {
-		  if(data.errCode > 0) {
-		     popup_welcome(user, data.count, 'login');
-		  } else {
-		     $('#login-message').html(get_message_for_errcode(data.errCode));  
-		  }
+			if(data.errCode > 0) {
+				popup_welcome(user, data.count, 'login');
+			} else {
+				$('#login-message').html(get_message_for_errcode(data.errCode));  
+			}
 		}
 
 		function handle_add_user_response(data, user) {
-		  if(data.errCode > 0) {
-		     popup_welcome(user, data.count, 'add');
-		  } else {
-		     $('#login-message').html(get_message_for_errcode(data.errCode)); 
-		  }
+			if(data.errCode > 0) {
+				popup_welcome(user, data.count, 'add');
+			} else {
+				$('#login-message').html(get_message_for_errcode(data.errCode)); 
+			}
 		}
 
 		$('#login-button').click(function() {
-		   username = $('#username').val()
-		   password = $('#password').val()
-		   json_request("/users/login", { user: username, password: password }, function(data) { return handle_login_response(data, username); }, function(err) { alert('error occurred on request'); });
+			username = $('#username').val()
+			password = $('#password').val()
+			$('#username').val("")
+			$('#password').val("")
+			json_request("/users/login", { user: username, password: password }, function(data) { return handle_login_response(data, username); }, function(err) { alert('error occurred on request'); });
 
-		   return false;
+			return false;
 		});
 
 		$('#add-user-button').click(function() {
-		   username = $('#username').val()
-		   password = $('#password').val()
-		   json_request("/users/add", { user: username, password: password }, function(data) { return handle_add_user_response(data, username); }, function(err) {alert('error occurred on request'); });
+			username = $('#username').val()
+			password = $('#password').val()
+			$('#username').val("")
+			$('#password').val("")
+			json_request("/users/add", { user: username, password: password }, function(data) { return handle_add_user_response(data, username); }, function(err) {alert('error occurred on request'); });
 
-		   return false;
+			return false;
 		});
 		
 		function popup_welcome(user, count, msg) {
 			//Getting the variable's value from a link 
-			var loginBox = '#welcome-popup'
+			var welcomeBox = '#welcome-popup'
 
 			//Fade in the Popup
-			$(loginBox).fadeIn(300);
+			$(welcomeBox).fadeIn(300);
 		
 			//Set the center alignment padding + border see css style
-			var popMargTop = ($(loginBox).height() + 24) / 2; 
-			var popMargLeft = ($(loginBox).width() + 24) / 2; 
+			var popMargTop = ($(welcomeBox).height() + 44) / 2; 
+			var popMargLeft = ($(welcomeBox).width() + 44) / 2; 
 		
-			$(loginBox).css({ 
+			$(welcomeBox).css({ 
 				'margin-top' : -popMargTop,
 				'margin-left' : -popMargLeft
 			});
@@ -113,8 +117,6 @@
 		}
 		
 		$('#logout-button').click(function() {
-		  $('#username').val("")
-		  $('#password').val("")
 			$('#mask , #welcome-popup').fadeOut(300 , function() {
 				$('#mask').remove();  
 			}); 
