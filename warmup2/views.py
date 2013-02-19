@@ -16,7 +16,7 @@ ERR_BAD_USERNAME = -3
 ERR_BAD_PASSWORD = -4
 
 def client(request):
-	return render_to_response('client.html')
+	return render_to_response('login_counter.html')
 
 @csrf_exempt
 def userLogin(request):
