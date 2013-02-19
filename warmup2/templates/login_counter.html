@@ -50,24 +50,6 @@
 			$('#login-message').html("Please enter your credentials below");
 		});
 
-		function handle_login_response(data, user) {
-			if(data.errCode > 0) {
-				popup_welcome(user, data.count, 'login');
-			} else {
-				$('#login-message').html(get_message_for_errcode(data.errCode));
-				enable_fields(); 
-			}
-		}
-
-		function handle_add_user_response(data, user) {
-			if(data.errCode > 0) {
-				popup_welcome(user, data.count, 'add');
-			} else {
-				$('#login-message').html(get_message_for_errcode(data.errCode));
-				enable_fields();
-			}
-		}
-
 		$('#login-button').click(function() {
 			username = $('#username').val()
 			password = $('#password').val()
@@ -79,7 +61,7 @@
 	        data: JSON.stringify({user: username, password: password}),
 	        contentType: "application/json",
 	        dataType: "json",
-	        success: function(data) {return handle_login_response(data, username);},
+	        success: function(data) {return handle_response(data, username, 'login');},
 	        error: function(err) {alert('The database has not been set up yet.');}
 	    });
 
@@ -97,12 +79,21 @@
 	        data: JSON.stringify({user: username, password: password}),
 	        contentType: "application/json",
 	        dataType: "json",
-	        success: function(data) {return handle_add_user_response(data, username);},
+	        success: function(data) {return handle_response(data, username, 'add');},
 	        error: function(err) {alert('The database has not been set up yet.');}
 	    });
 
 			return false;
 		});
+		
+		function handle_response(data, user, msg) {
+			if(data.errCode > 0) {
+				popup_welcome(user, data.count, msg);
+			} else {
+				$('#login-message').html(get_message_for_errcode(data.errCode));
+				enable_fields(); 
+			}
+		}
 		
 		function popup_welcome(user, count, msg) {
 			//Getting the variable's value from a link 
